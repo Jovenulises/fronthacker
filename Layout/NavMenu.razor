@@ -1,0 +1,65 @@
+﻿<nav class="bg-white shadow-sm">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="flex h-16 justify-between">
+   
+            <div class="flex flex-shrink-0 items-center">
+                <a href="/" class="text-xl font-bold text-indigo-600 transition-colors hover:text-indigo-800">
+                    TechNews
+                </a>
+            </div>
+
+            <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                <a href="/"
+                   class="inline-flex items-center border-b-2 border-indigo-500 px-1 pt-1 text-sm font-medium text-gray-900">
+                    Populares
+                </a>
+            </div>
+
+            <div class="-mr-2 flex items-center sm:hidden">
+                <button type="button"
+                        class="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+                        @onclick="ToggleMobileMenu">
+                    <span class="sr-only">Abrir menú principal</span>
+                    <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    @if (mobileMenuOpen)
+    {
+        <div class="sm:hidden">
+            <div class="space-y-1 pt-2 pb-3">
+                <a href="/"
+                   class="block border-l-4 border-indigo-500 bg-indigo-50 py-2 pr-4 pl-3 text-base font-medium text-indigo-700">
+                    Inicio
+                </a>
+                <a href="#"
+                   class="border-transparent block border-l-4 py-2 pr-4 pl-3 text-base font-medium text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700">
+                    Populares
+                </a>
+                <a href="#"
+                   class="border-transparent block border-l-4 py-2 pr-4 pl-3 text-base font-medium text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700">
+                    Categorías
+                </a>
+                <a href="#"
+                   class="border-transparent block border-l-4 py-2 pr-4 pl-3 text-base font-medium text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700">
+                    Guardados
+                </a>
+            </div>
+        </div>
+    }
+</nav>
+
+@code {
+    private bool mobileMenuOpen = false;
+
+  
+
+    private void ToggleMobileMenu()
+    {
+        mobileMenuOpen = !mobileMenuOpen;
+    }
+}

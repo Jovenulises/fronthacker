@@ -1,0 +1,139 @@
+﻿@page "/"
+
+@using BestHackerNewsStoriesFront.Architecture.HackerNewsStories.DTOs
+@inject BestHackerNewsStoriesFront.Architecture.HackerNewsStories.Interfaces.IStoryService StoryService
+
+<PageTitle>Top Tech Stories</PageTitle>
+
+<div class="min-h-screen bg-gray-50 px-4 py-8 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-4xl">
+ 
+        <div class="mb-8 text-center">
+            <h1 class="text-4xl font-extrabold text-gray-900 sm:text-5xl sm:tracking-tight lg:text-6xl">
+                Top Tech Stories
+            </h1>
+            <p class="mx-auto mt-5 max-w-xl text-xl text-gray-500">
+                Las mejores historias de tecnología seleccionadas para ti
+            </p>
+        </div>
+
+        <div class="mb-6 flex flex-col items-center justify-between gap-4 sm:flex-row">
+            <div class="flex items-center">
+                <label for="storyCount" class="mr-3 text-sm font-medium text-gray-700">Mostrar:</label>
+                <select id="storyCount" 
+                        
+                        @onchange="OnStoryCountChanged"
+                        class="rounded-md border-gray-300 py-2 pr-8 pl-3 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500">
+                    <option value="10">10 resultados</option>
+                    <option value="20">20 resultados</option>
+                    <option value="30">30 resultados</option>
+                    <option value="40">40 resultados</option>
+                    <option value="50">50 resultados</option>
+                </select>
+            </div>
+            <div class="text-sm text-gray-500">
+                Mostrando @(stories?.Count ?? 0) historias
+            </div>
+        </div>
+
+        @if (stories == null)
+        {
+            <div class="flex items-center justify-center py-20">
+                <div class="border-t-2 h-12 w-12 animate-spin rounded-full border-b-2 border-indigo-500"></div>
+                <span class="ml-4 text-lg font-medium text-gray-700">Cargando historias...</span>
+            </div>
+        }
+        else
+        {
+            <div class="space-y-6">
+                @foreach (var story in stories)
+                {
+                    <div class="overflow-hidden rounded-lg bg-white shadow transition-all duration-300 hover:shadow-xl">
+                        <div class="p-6">
+                            <div class="flex items-start">
+                                <div class="mr-4 flex-shrink-0 rounded-lg bg-indigo-100 p-3 text-center">
+                                    <div class="text-xl font-bold text-indigo-800">@story.Score</div>
+                                    <div class="text-xs font-medium text-indigo-600">PUNTOS</div>
+                                </div>
+
+                                <div class="flex-1">
+                                    <a href="@story.Uri" target="_blank" class="block">
+                                        <h3 class="text-xl font-bold text-gray-900 transition-colors duration-200 hover:text-indigo-600">
+                                            @story.Title
+                                        </h3>
+                                    </a>
+
+                                    <div class="mt-2 flex flex-wrap items-center text-sm text-gray-500">
+                                        <span class="mr-4 flex items-center">
+                                            <svg class="mr-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                            </svg>
+                                          By @story.PostedBy
+                                        </span>
+
+                                        <span class="mr-4 flex items-center">
+                                            <svg class="mr-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                            </svg>
+                                            @story.CommentCount comentarios
+                                        </span>
+
+                                        <span class="flex items-center">
+                                            <svg class="mr-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                            @story.Time.ToLocalTime().ToString("f")
+                                        </span>
+                                    </div>
+
+                                    <div class="mt-3">
+                                        <a href="@story.Uri" target="_blank" class="inline-flex items-center font-medium text-indigo-600 hover:text-indigo-800">
+                                            Leer historia
+                                            <svg class="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                                            </svg>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private List<StoryDto>? stories;
+    private int storyCount = 10;
+    private bool isLoading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadStories();
+    }
+
+    private async Task LoadStories()
+    {
+        try
+        {
+            isLoading = true;
+            stories = null; 
+            stories = await StoryService.GetTopStoriesAsync(storyCount);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task OnStoryCountChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out int newCount) && newCount != storyCount)
+        {
+            storyCount = newCount;
+            await LoadStories();
+        }
+    }
+}
